@@ -98,7 +98,7 @@ public class CustomEndpoint {
         if (Log.isLoggable(Log.VERBOSE)) Log.v("Setting custom endpoint to: " + sEndpoint);
     }
 
-    private static Endpoint getEndpoint() {
+    public static Endpoint getEndpoint() {
         if (sEndpoint != null) return sEndpoint;
         String savedEndpointName = App.getInstance().getSharedPreferences("layer_custom_endpoint", Context.MODE_PRIVATE).getString("name", null);
         if (savedEndpointName == null) return null;
@@ -113,7 +113,7 @@ public class CustomEndpoint {
 
         // Check for endpoints in resources
         Context context = App.getInstance();
-        int resId = context.getResources().getIdentifier("layer_endpoints", "raw", context.getPackageName());
+        int resId = context.getResources().getIdentifier("layer_config", "raw", context.getPackageName());
         if (resId == 0) return null;
 
         // Read endpoints from resources
@@ -169,8 +169,8 @@ public class CustomEndpoint {
 
         public Endpoint(JSONObject o) throws JSONException {
             mName = o.getString("name");
-            mAppId = o.getString("appId");
-            mProviderUrl = o.getString("providerUrl");
+            mAppId = o.getString("app_id");
+            mProviderUrl = o.getString("identity_provider_url");
 
             JSONObject platform = o.optJSONObject("platform");
             if (platform != null) {
@@ -207,6 +207,10 @@ public class CustomEndpoint {
 
         public String getAppId() {
             return mAppId;
+        }
+
+        public String getProviderUrl() {
+            return mProviderUrl;
         }
 
         @Override
