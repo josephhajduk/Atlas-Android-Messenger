@@ -112,43 +112,48 @@ public class CustomEndpoint {
         sEndpoints = new HashMap<String, Endpoint>();
 
         // Check for endpoints in resources
-        Context context = App.getInstance();
-        int resId = context.getResources().getIdentifier("layer_config", "raw", context.getPackageName());
-        if (resId == 0) return null;
+        Context context = App.getInstance().getApplicationContext();
+//        int resId = context.getResources().getIdentifier("layer_config", "raw", context.getPackageName());
+//        if (resId == 0) return null;
 
-        // Read endpoints from resources
-        Writer writer = new StringWriter();
-        char[] buffer = new char[1024];
-        InputStream is = context.getResources().openRawResource(resId);
         try {
-            Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            int n;
-            while ((n = reader.read(buffer)) != -1) {
-                writer.write(buffer, 0, n);
-            }
-        } catch (Exception e) {
-            if (Log.isLoggable(Log.ERROR)) Log.e(e.getMessage(), e);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    if (Log.isLoggable(Log.ERROR)) Log.e(e.getMessage(), e);
+            // Read endpoints from resources
+            Writer writer = new StringWriter();
+            char[] buffer = new char[1024];
+            InputStream is = context.getAssets().open("LayerConfiguration.json");
+            try {
+                Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                int n;
+                while ((n = reader.read(buffer)) != -1) {
+                    writer.write(buffer, 0, n);
+                }
+            } catch (Exception e) {
+                if (Log.isLoggable(Log.ERROR)) Log.e(e.getMessage(), e);
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        if (Log.isLoggable(Log.ERROR)) Log.e(e.getMessage(), e);
+                    }
                 }
             }
-        }
-        String content = writer.toString().trim();
-        if (content.isEmpty()) return null;
+            String content = writer.toString().trim();
+            if (content.isEmpty()) return null;
 
-        // Parse endpoints from JSON
-        try {
-            JSONArray array = new JSONArray(content);
-            for (int i = 0; i < array.length(); i++) {
-                Endpoint endpoint = new Endpoint(array.getJSONObject(i));
-                sEndpoints.put(endpoint.getName(), endpoint);
+            // Parse endpoints from JSON
+            try {
+                JSONArray array = new JSONArray(content);
+                for (int i = 0; i < array.length(); i++) {
+                    Endpoint endpoint = new Endpoint(array.getJSONObject(i));
+                    sEndpoints.put(endpoint.getName(), endpoint);
+                }
+                return sEndpoints;
+            } catch (JSONException e) {
+                if (Log.isLoggable(Log.ERROR)) Log.e(e.getMessage(), e);
             }
-            return sEndpoints;
-        } catch (JSONException e) {
+
+        } catch (IOException e) {
             if (Log.isLoggable(Log.ERROR)) Log.e(e.getMessage(), e);
         }
         return null;
