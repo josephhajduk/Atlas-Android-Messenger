@@ -115,8 +115,6 @@ public class CustomEndpoint {
 
         // Check for endpoints in resources
         Context context = App.getInstance().getApplicationContext();
-//        int resId = context.getResources().getIdentifier("layer_config", "raw", context.getPackageName());
-//        if (resId == 0) return null;
 
         try {
             // Read endpoints from assets
