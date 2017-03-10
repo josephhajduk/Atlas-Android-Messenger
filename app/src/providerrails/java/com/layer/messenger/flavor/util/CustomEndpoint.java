@@ -1,6 +1,7 @@
 package com.layer.messenger.flavor.util;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -107,6 +108,7 @@ public class CustomEndpoint {
         return sEndpoint;
     }
 
+    @Nullable
     private static Map<String, Endpoint> getEndpoints() {
         if (sEndpoints != null) return sEndpoints;
         sEndpoints = new HashMap<String, Endpoint>();
@@ -117,7 +119,7 @@ public class CustomEndpoint {
 //        if (resId == 0) return null;
 
         try {
-            // Read endpoints from resources
+            // Read endpoints from assets
             Writer writer = new StringWriter();
             char[] buffer = new char[1024];
             InputStream is = context.getAssets().open("LayerConfiguration.json");
@@ -127,7 +129,7 @@ public class CustomEndpoint {
                 while ((n = reader.read(buffer)) != -1) {
                     writer.write(buffer, 0, n);
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 if (Log.isLoggable(Log.ERROR)) Log.e(e.getMessage(), e);
             } finally {
                 if (is != null) {
